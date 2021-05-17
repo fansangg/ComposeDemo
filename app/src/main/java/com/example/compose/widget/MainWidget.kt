@@ -24,6 +24,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.ScreenUtils
+import com.blankj.utilcode.util.SizeUtils
 import com.example.compose.R
 import com.example.compose.bean.UserInfo
 import com.example.compose.ui.theme.NormalFontColor
@@ -60,6 +63,18 @@ fun HeadCard() {
             UserInfo(
                 "后自以为是不懂自己在生活",
                 "https://oss.sceneconsole.cn/avatar/156082426/9855DE0F-32A7-4D17-8DED-5CD2E6EC3BD7.jpg"
+            ),
+            UserInfo(
+                "就纠结",
+                "https://arte.oss-cn-beijing.aliyuncs.com/avatar/156085051/CD6A425A-52A1-49B3-BF4E-8E6631BE54F9.jpg"
+            ),
+            UserInfo(
+                "我们",
+                "https://arte.oss-cn-beijing.aliyuncs.com/avatar/156084576/7B04AD13-DC1B-4927-AE05-81146DC81A6F.jpg"
+            ),
+            UserInfo(
+                "小司腾",
+                "https://arte.oss-cn-beijing.aliyuncs.com/avatar/156085155/D967F72C-AD5D-4EF0-A88F-5AA81374D3AE.jpg"
             )
         )
     }
@@ -178,9 +193,16 @@ fun HeadCard() {
                 }
             }
 
+            val count = (ScreenUtils.getScreenWidth() - SizeUtils.dp2px(17f) * 2).div(SizeUtils.dp2px(72f))
+            LogUtils.dTag("fansangg","count == ${count}")
+            val filterList = userInfoList.filterIndexed { index, _ ->
+                index < count
+            }
             Row(modifier = Modifier.padding(start = 17.dp, end = 17.dp)) {
-                userInfoList.forEach {
-                    UserHead(url = it.head, name = it.name)
+                filterList.forEachIndexed { index, userInfo ->
+                    if (index != count - 1)
+                        UserHead(url = userInfo.head, name = userInfo.name)
+                    else MoreBtn()
                 }
             }
         }
@@ -189,16 +211,65 @@ fun HeadCard() {
 }
 
 @Composable
-fun UserHead(url: String, name: String) {
-    Column(Modifier.width(72.dp)) {
-        Image(
-            painter = rememberCoilPainter(request = url),
-            contentDescription = "head",
+fun MoreBtn() {
+    Column(
+        Modifier
+            .wrapContentHeight()
+            .width(72.dp)
+    ) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(72.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_poi_yinying),
+                contentDescription = "",
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_poi_more),
+                contentDescription = "head",
+                modifier = Modifier
+                    .wrapContentSize()
+            )
+        }
+
+        Text(
+            text = "更多",
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 12.sp,
+            color = NormalFontColor,
             modifier = Modifier
-                .size(48.dp)
-                .clip(shape = RoundedCornerShape(24.dp))
-                .align(alignment = Alignment.CenterHorizontally)
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
         )
+    }
+}
+
+@Composable
+fun UserHead(url: String, name: String) {
+    Column(
+        Modifier
+            .width(72.dp)
+            .wrapContentHeight()
+    ) {
+        Box(modifier = Modifier.size(72.dp), contentAlignment = Alignment.Center) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_poi_yinying),
+                contentDescription = "",
+                modifier = Modifier.size(72.dp)
+            )
+
+            Image(
+                painter = rememberCoilPainter(request = url),
+                contentDescription = "head",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(shape = RoundedCornerShape(24.dp))
+            )
+        }
+
         Text(
             text = name,
             fontWeight = FontWeight.SemiBold,
