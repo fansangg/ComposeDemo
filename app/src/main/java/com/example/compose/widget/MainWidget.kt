@@ -3,15 +3,18 @@ package com.example.compose.widget
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -22,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.compose.R
-import com.example.compose.UserInfo
+import com.example.compose.bean.UserInfo
 import com.example.compose.ui.theme.NormalFontColor
 import com.google.accompanist.coil.rememberCoilPainter
 
@@ -71,7 +74,8 @@ fun HeadCard() {
             .padding(8.dp)
             .clip(RoundedCornerShape(12.dp)),
         backgroundColor = Color(0xff3a304e),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        elevation = 1.dp
     ) {
         Column(Modifier.padding(bottom = 20.dp)) {
             ConstraintLayout(
@@ -151,21 +155,20 @@ fun HeadCard() {
                 val followColor = Color(0x1aa0a0aa)
                 val unFollowColor = Color(0x66211536)
 
-                Box(modifier = Modifier
-                    .width(80.dp)
-                    .height(30.dp)
-                    .constrainAs(followBtn) {
-                        end.linkTo(parent.end, 30.dp)
-                        centerVerticallyTo(head)
-                    }
-                    .clickable {
-                        followState = !followState
-                    }
-                    .background(
-                        if (followState) followColor else unFollowColor,
-                        shape = RoundedCornerShape(14.dp)
-                    ),
-                    contentAlignment = Alignment.Center) {
+                Button(
+                    onClick = { followState = !followState }, modifier = Modifier
+                        .width(80.dp)
+                        .height(30.dp)
+                        .constrainAs(followBtn) {
+                            end.linkTo(parent.end, 30.dp)
+                            centerVerticallyTo(head)
+                        }, shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = if (followState) followColor else unFollowColor),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp
+                    )
+                ) {
                     Text(
                         text = if (followState) "已关注" else "未关注",
                         fontSize = 12.sp,
@@ -208,5 +211,182 @@ fun UserHead(url: String, name: String) {
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+@Composable
+fun BigCell(click: () -> Unit) {
+    Button(
+        onClick = { click.invoke() },
+        elevation = ButtonDefaults.elevation(0.dp, 0.dp),
+        contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF1D182F)),
+        shape = RoundedCornerShape(0.dp)
+    ) {
+        Column {
+            Spacer(
+                modifier = Modifier
+                    .height(8.dp)
+                    .fillMaxWidth()
+            )
+            Card(
+                elevation = 1.dp,
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp),
+                backgroundColor = Color(0xff3a304e),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(18.dp)
+                    )
+                    Text(
+                        text = "留下的物布",
+                        fontSize = 14.sp,
+                        color = NormalFontColor,
+                        modifier = Modifier.padding(start = 16.dp),
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Card(
+                        elevation = 1.dp,
+                        shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    ) {
+                        ConstraintLayout(
+                            modifier = Modifier
+                                .size(327.dp)
+                                .align(Alignment.CenterHorizontally)
+                        ) {
+                            val (likeContainer, arteType, headContainer, shadowBg) = createRefs()
+
+                            Image(
+                                painter = rememberCoilPainter(request = "https://oss.sceneconsole.cn/156084821/image/1933D188-992C-4BCF-9F54-90863D03EDD1.png"),
+                                contentDescription = "",
+                                Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .height(32.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(color = Color(0x33000000))
+                                    .padding(start = 10.dp, end = 10.dp)
+                                    .constrainAs(likeContainer) {
+                                        top.linkTo(parent.top, margin = 12.dp)
+                                        start.linkTo(parent.start, margin = 12.dp)
+                                    }, verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.poi_crown_big),
+                                    contentDescription = "crown",
+                                    modifier = Modifier.size(22.dp, 16.dp)
+                                )
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(7.dp)
+                                )
+                                Text(
+                                    text = "99赞", fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = NormalFontColor
+                                )
+                            }
+
+                            Image(painter = painterResource(id = R.drawable.video),
+                                contentDescription = "typeVideo",
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .constrainAs(arteType) {
+                                        bottom.linkTo(likeContainer.bottom)
+                                        end.linkTo(parent.end)
+                                    }
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(60.dp)
+                                    .background(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent, Color(0xcc000000)
+                                            )
+                                        )
+                                    )
+                                    .constrainAs(shadowBg) {
+                                        bottom.linkTo(parent.bottom)
+                                    }
+                            )
+
+                            ConstraintLayout(modifier = Modifier
+                                .height(34.dp)
+                                .constrainAs(headContainer) {
+                                    start.linkTo(parent.start, 10.dp)
+                                    bottom.linkTo(parent.bottom, 11.dp)
+                                }) {
+                                val (head, name, slogan, vIcon) = createRefs()
+                                Image(painter = rememberCoilPainter(request = "https://oss.sceneconsole.cn/avatar/156084821/B29F5399-4FAE-4C65-91AD-F3ADF277042E.jpg"),
+                                    contentDescription = "userHead",
+                                    modifier = Modifier
+                                        .size(
+                                            34.dp
+                                        )
+                                        .clip(shape = CircleShape)
+                                        .constrainAs(head) {
+                                            start.linkTo(parent.start)
+                                            top.linkTo(parent.top)
+                                        })
+                                Text(
+                                    text = "Sara是个咖啡师",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = NormalFontColor,
+                                    modifier = Modifier.constrainAs(name) {
+                                        start.linkTo(head.end, 6.dp)
+                                        top.linkTo(head.top)
+                                        bottom.linkTo(slogan.top)
+                                    })
+
+                                Text(
+                                    text = "朝阳区三里屯皮耶咖啡",
+                                    color = NormalFontColor,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.constrainAs(slogan) {
+                                        start.linkTo(name.start)
+                                        top.linkTo(name.bottom)
+                                        bottom.linkTo(head.bottom)
+                                    })
+
+                                Image(
+                                    painter = painterResource(id = R.drawable.star_v),
+                                    contentDescription = "v",
+                                    modifier = Modifier.constrainAs(vIcon) {
+                                        start.linkTo(name.end)
+                                        top.linkTo(name.top)
+                                        bottom.linkTo(name.bottom)
+                                    })
+                            }
+
+
+                        }
+
+                    }
+                }
+            }
+        }
     }
 }

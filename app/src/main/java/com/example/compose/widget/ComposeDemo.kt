@@ -22,7 +22,7 @@ import com.example.compose.R
 fun DemoCode(){
     MaterialTheme {
         val typography = MaterialTheme.typography
-        Column(Modifier.padding(20.dp)) {
+        Column(Modifier.padding(start = 20.dp,end = 20.dp,top = 5.dp)) {
             Text(
                 text = "This Is JetPack Compose Demo", color = Color.Cyan,
                 modifier = Modifier.fillMaxWidth(),
