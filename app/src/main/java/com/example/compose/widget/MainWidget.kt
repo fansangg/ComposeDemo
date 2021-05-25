@@ -3,6 +3,7 @@ package com.example.compose.widget
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,10 +22,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ScreenUtils
 import com.blankj.utilcode.util.SizeUtils
 import com.example.compose.R
@@ -33,51 +34,23 @@ import com.example.compose.ui.theme.NormalFontColor
 import com.google.accompanist.coil.rememberCoilPainter
 
 @Composable
-fun Content() {
+fun Content(userData:List<UserInfo>,moreClick:(() -> Unit)) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0XFF1D182F))
     ) {
-        HeadCard()
+        HeadCard(userData,moreClick)
+        BigCell{
+
+        }
     }
 }
 
 
 @Composable
-fun HeadCard() {
-    val userInfoList: MutableList<UserInfo> by lazy {
-        mutableListOf(
-            UserInfo(
-                "金角大王",
-                "https://oss.sceneconsole.cn/avatar/156084790/9571341A-2A82-4DFB-85A1-E210E09D2371.jpg"
-            ),
-            UserInfo(
-                "蟹老板家的蟹黄堡最好吃",
-                "https://arte.oss-cn-beijing.aliyuncs.com/avatar/156085168/C322C661-C22B-43F7-913B-2ABE8D9C42D5.jpg"
-            ),
-            UserInfo(
-                "你瞅啥",
-                "https://oss.sceneconsole.cn/avatar/156084685/502FD4F7-E2FB-480E-9CFA-2FCB492B24AF.jpg"
-            ),
-            UserInfo(
-                "后自以为是不懂自己在生活",
-                "https://oss.sceneconsole.cn/avatar/156082426/9855DE0F-32A7-4D17-8DED-5CD2E6EC3BD7.jpg"
-            ),
-            UserInfo(
-                "就纠结",
-                "https://arte.oss-cn-beijing.aliyuncs.com/avatar/156085051/CD6A425A-52A1-49B3-BF4E-8E6631BE54F9.jpg"
-            ),
-            UserInfo(
-                "我们",
-                "https://arte.oss-cn-beijing.aliyuncs.com/avatar/156084576/7B04AD13-DC1B-4927-AE05-81146DC81A6F.jpg"
-            ),
-            UserInfo(
-                "小司腾",
-                "https://arte.oss-cn-beijing.aliyuncs.com/avatar/156085155/D967F72C-AD5D-4EF0-A88F-5AA81374D3AE.jpg"
-            )
-        )
-    }
+fun HeadCard(userData:List<UserInfo>,moreClick:(() -> Unit)) {
+
     var followState by remember {
         mutableStateOf(false)
     }
@@ -193,16 +166,15 @@ fun HeadCard() {
                 }
             }
 
-            val count = (ScreenUtils.getScreenWidth() - SizeUtils.dp2px(17f) * 2).div(SizeUtils.dp2px(72f))
-            LogUtils.dTag("fansangg","count == ${count}")
-            val filterList = userInfoList.filterIndexed { index, _ ->
+            val count = (ScreenUtils.getScreenWidth() - SizeUtils.dp2px(34.dp.value)).div(SizeUtils.dp2px(72.dp.value))
+            val filterList = userData.filterIndexed { index, _ ->
                 index < count
             }
             Row(modifier = Modifier.padding(start = 17.dp, end = 17.dp)) {
                 filterList.forEachIndexed { index, userInfo ->
                     if (index != count - 1)
                         UserHead(url = userInfo.head, name = userInfo.name)
-                    else MoreBtn()
+                    else MoreBtn(moreClick)
                 }
             }
         }
@@ -211,11 +183,14 @@ fun HeadCard() {
 }
 
 @Composable
-fun MoreBtn() {
+fun MoreBtn(block:(() -> Unit)) {
     Column(
         Modifier
             .wrapContentHeight()
             .width(72.dp)
+            .clickable {
+                block()
+            }
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.size(72.dp)) {
             Image(
@@ -287,60 +262,62 @@ fun UserHead(url: String, name: String) {
 
 @Composable
 fun BigCell(click: () -> Unit) {
-    Button(
-        onClick = { click.invoke() },
-        elevation = ButtonDefaults.elevation(0.dp, 0.dp),
-        contentPadding = PaddingValues(0.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFF1D182F)),
-        shape = RoundedCornerShape(0.dp)
-    ) {
-        Column {
-            Spacer(
-                modifier = Modifier
-                    .height(8.dp)
-                    .fillMaxWidth()
-            )
-            Card(
-                elevation = 1.dp,
+
+    Column(modifier = Modifier.background(Color(0XFF1D182F))) {
+        Spacer(
+            modifier = Modifier
+                .height(8.dp)
+                .fillMaxWidth()
+        )
+        Card(
+            elevation = 1.dp,
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 8.dp),
+            backgroundColor = Color(0xff3a304e),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(
                 modifier = Modifier
                     .wrapContentHeight()
                     .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp),
-                backgroundColor = Color(0xff3a304e),
-                shape = RoundedCornerShape(12.dp)
+                    .padding(bottom = 20.dp)
             ) {
-                Column(
+                Spacer(
                     modifier = Modifier
-                        .wrapContentHeight()
                         .fillMaxWidth()
+                        .height(18.dp)
+                )
+                Text(
+                    text = "留下的物布",
+                    fontSize = 14.sp,
+                    color = NormalFontColor,
+                    modifier = Modifier.padding(start = 16.dp),
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+                val imgSize = SizeUtils.px2dp(
+                    ScreenUtils.getScreenWidth().toFloat()
+                ) - 16.dp.value - 32.dp.value
+                Button(
+                    onClick = { click.invoke() },
+                    elevation = ButtonDefaults.elevation(0.dp, 0.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                    shape = RoundedCornerShape(0.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .size(Dp(imgSize))
                 ) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(18.dp)
-                    )
-                    Text(
-                        text = "留下的物布",
-                        fontSize = 14.sp,
-                        color = NormalFontColor,
-                        modifier = Modifier.padding(start = 16.dp),
-                        fontWeight = FontWeight.SemiBold
-                    )
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
                     Card(
                         elevation = 1.dp,
                         shape = RoundedCornerShape(6.dp),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        ConstraintLayout(
-                            modifier = Modifier
-                                .size(327.dp)
-                                .align(Alignment.CenterHorizontally)
-                        ) {
+                        ConstraintLayout {
                             val (likeContainer, arteType, headContainer, shadowBg) = createRefs()
-
                             Image(
                                 painter = rememberCoilPainter(request = "https://oss.sceneconsole.cn/156084821/image/1933D188-992C-4BCF-9F54-90863D03EDD1.png"),
                                 contentDescription = "",
